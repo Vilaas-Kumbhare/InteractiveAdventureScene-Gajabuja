@@ -6,12 +6,28 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        // Get input from arrow keys or WASD
-        float horizontal = Input.GetAxis("Horizontal"); // Left/Right arrow keys or A/D
-        float vertical = Input.GetAxis("Vertical");     // Up/Down arrow keys or W/S
+        Vector3 movement = Vector3.zero;
 
-        // Calculate movement vector
-        Vector3 movement = new Vector3(horizontal, vertical, 0f);
+        // Check if running on a touch-supported device
+        if (Input.touchCount > 0)
+        {
+            // Get the first touch
+            Touch touch = Input.GetTouch(0);
+
+            // Translate touch position to movement (drag-based control)
+            if (touch.phase == TouchPhase.Moved)
+            {
+                Vector2 touchDelta = touch.deltaPosition;
+                movement = new Vector3(touchDelta.x, touchDelta.y, 0f).normalized;
+            }
+        }
+        else
+        {
+            // Fallback for keyboard/controller input
+            float horizontal = Input.GetAxis("Horizontal"); // Left/Right arrow keys or A/D
+            float vertical = Input.GetAxis("Vertical");     // Up/Down arrow keys or W/S
+            movement = new Vector3(horizontal, vertical, 0f);
+        }
 
         // Move the player
         transform.Translate(movement * moveSpeed * Time.deltaTime);
